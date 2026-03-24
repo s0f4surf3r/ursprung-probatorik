@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ursprung</title>
+<style>
+:root {
+  --bg: #06090f;
+  --surface: #0e1320;
+  --card: #141d30;
+  --border: #3e5080;
+  --text: #f4f6ff;
+  --text-muted: #c2cee8;
+  --text-dim: #8098b8;
+  --teal: #b8d0f8;
+  --accent: #f0d068;
+  --warm: #e8a878;
+  --safe: #90c098;
+  --btn-text: #0a0e1a;
+  --selection: rgba(184,208,248,0.25);
+}
+:root.light {
+  --bg: #e4e8f8;
+  --surface: #ffffff;
+  --card: #d8e0f4;
+  --border: #8898cc;
+  --text: #000000;
+  --text-muted: #2c3450;
+  --text-dim: #505c80;
+  --teal: #2c4490;
+  --accent: #c8a820;
+  --warm: #c07030;
+  --safe: #2a8040;
+  --btn-text: #ffffff;
+  --selection: rgba(44,68,144,0.15);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, 'Helvetica Neue', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 17px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+::selection { background: var(--selection); }
+
+.app { max-width: 640px; margin: 0 auto; padding: 2rem 1.5rem; min-height: 100vh; }
+
+/* Spacing Stufe 4 — emotionaler/narrativer Kontext (Wahrnehmungsgrammatik Prinzip 4) */
+
+.header {
+  text-align: center;
+  padding: 3rem 0 2rem;
+}
+.header h1 {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+.header p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  max-width: 480px;
+  margin: 0 auto;
+  white-space: pre-line;
+}
+
+.progress {
+  display: flex;
+  gap: 4px;
+  margin: 2rem 0;
+}
+.progress-dot {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border);
+  transition: background 0.4s;
+}
+.progress-dot.done { background: var(--teal); }
+.progress-dot.active { background: var(--accent); }
+
+.step { display: none; animation: fadeIn 0.5s ease; }
+.step.active { display: block; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.step-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+.step-question {
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 1rem;
+}
+.step-desc {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 2.4rem;
+  line-height: 1.75;
+}
+
+/* Textarea */
+.textarea-wrap { margin-bottom: 2.4rem; }
+textarea {
+  width: 100%;
+  min-height: 140px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 1.2rem 1.4rem;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--text);
+  line-height: 1.7;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  -webkit-font-smoothing: antialiased;
+}
+textarea:focus { border-color: var(--teal); }
+textarea::placeholder { color: var(--text-dim); font-style: italic; }
+textarea.small { min-height: 80px; }
+.textarea-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* Options */
+.options { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2.4rem; }
+.option {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 1.1rem 1.3rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--text);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+.option:hover { border-color: var(--teal); }
+.option.selected { border-color: var(--teal); background: var(--selection); }
+.option-radio {
+  width: 20px; height: 20px; min-width: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  margin-top: 2px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.options.multi .option-radio { border-radius: 5px; }
+.option.selected .option-radio { border-color: var(--teal); }
+.option.selected .option-radio::after {
+  content: '';
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--teal);
+}
+.options.multi .option.selected .option-radio::after {
+  border-radius: 2px;
+}
+.option-text strong { display: block; margin-bottom: 0.2rem; }
+.option-text small { color: var(--text-dim); font-size: 0.85rem; }
+
+/* Hint box */
+.hint {
+  background: rgba(240,208,104,0.08);
+  border: 1px solid rgba(240,208,104,0.15);
+  border-radius: 10px;
+  padding: 1.2rem 1.4rem;
+  margin-bottom: 2.4rem;
+  font-size: 0.9rem;
+  color: var(--accent);
+  line-height: 1.7;
+}
+.hint strong { display: block; margin-bottom: 0.3rem; }
+:root.light .hint {
+  color: #5a4500;
+  background: rgba(160,120,0,0.08);
+  border-color: rgba(160,120,0,0.22);
+}
+
+/* Buttons */
+.btn-row { display: flex; gap: 0.8rem; margin-top: 2rem; }
+.btn {
+  flex: 1;
+  padding: 0.9rem 1.5rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn:hover { border-color: var(--text-muted); color: var(--text); }
+.btn-primary {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: var(--btn-text);
+}
+.btn-primary:hover { opacity: 0.85; }
+.btn-primary:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* Result */
+.result { display: none; }
+.result.active { display: block; }
+.result-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1.2rem;
+}
+.result-section h3 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 0.8rem;
+}
+.result-text {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.result-text em { color: var(--text); font-style: normal; font-weight: 600; }
+.result-empty { color: var(--text-dim); font-size: 0.85rem; font-style: italic; }
+
+.result-pattern {
+  margin-bottom: 1rem;
+}
+.result-pattern-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+.result-pattern-desc {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+.result-summary {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1.2rem;
+}
+.result-summary h3 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.8rem;
+}
+.result-summary p {
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.result-closing {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.8;
+  font-style: italic;
+}
+
+.result-bridge {
+  background: color-mix(in srgb, var(--safe) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--safe) 20%, transparent);
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1.2rem;
+}
+.result-bridge h3 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--safe);
+  margin-bottom: 0.8rem;
+}
+.result-bridge p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+.result-bridge .btn-bridge {
+  display: inline-block;
+  padding: 0.7rem 1.5rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--safe);
+  background: transparent;
+  color: var(--safe);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.result-bridge .btn-bridge:hover { background: color-mix(in srgb, var(--safe) 15%, transparent); }
+
+.result-actions {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 2rem;
+  padding-bottom: 3rem;
+}
+.copy-feedback {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--safe);
+  margin-top: 0.5rem;
+  height: 1.2em;
+  transition: opacity 0.3s;
+}
+
+/* Top controls */
+.top-controls {
+  position: fixed;
+  top: 1.2rem;
+  right: 1.2rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 100;
+}
+.top-btn {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.3s;
+}
+.top-btn:hover { border-color: var(--teal); color: var(--text); }
+.lang-toggle { font-size: 0.7rem; font-weight: 800; letter-spacing: 1px; }
+.theme-toggle .icon-sun { display: none; }
+.theme-toggle .icon-moon { display: block; }
+:root.light .theme-toggle .icon-sun { display: block; }
+:root.light .theme-toggle .icon-moon { display: none; }
+
+.foot {
+  text-align: center;
+  padding: 1rem 0 2rem;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+</style>
+</head>
+<body>
+
+<div class="top-controls">
+  <button class="top-btn lang-toggle" onclick="toggleLang()" id="langBtn">EN</button>
+  <button class="top-btn theme-toggle" onclick="toggleTheme()">
+    <span class="icon-moon">&#9790;</span>
+    <span class="icon-sun">&#9728;</span>
+  </button>
+</div>
+
+<div class="app">
+
+<div class="header">
+  <h1 data-i18n="title"></h1>
+  <p data-i18n="subtitle"></p>
+</div>
+
+<div class="progress" id="progress"></div>
+
+<!-- ====== STEP 1: ANKUNFT ====== -->
+<div class="step" id="step-1" data-step="1">
+  <div class="step-tag" data-i18n="s1_tag"></div>
+  <div class="step-question" data-i18n="s1_q"></div>
+  <div class="step-desc" data-i18n="s1_desc"></div>
+  <div class="options" data-key="ankunft">
+    <button class="option" data-value="stolz">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s1_o1"></strong><small data-i18n="s1_o1d"></small></div>
+    </button>
+    <button class="option" data-value="sachlich">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s1_o2"></strong><small data-i18n="s1_o2d"></small></div>
+    </button>
+    <button class="option" data-value="selten">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s1_o3"></strong><small data-i18n="s1_o3d"></small></div>
+    </button>
+    <button class="option" data-value="widerspruch">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s1_o4"></strong><small data-i18n="s1_o4d"></small></div>
+    </button>
+    <button class="option" data-value="unbekannt">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s1_o5"></strong><small data-i18n="s1_o5d"></small></div>
+    </button>
+  </div>
+  <div class="hint" data-i18n-html="s1_hint"></div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="nextStep()" data-i18n="btn_next"></button>
+  </div>
+</div>
+
+<!-- ====== STEP 2: WELT DER ELTERN ====== -->
+<div class="step" id="step-2" data-step="2">
+  <div class="step-tag" data-i18n="s2_tag"></div>
+  <div class="step-question" data-i18n="s2_q"></div>
+  <div class="step-desc" data-i18n="s2_desc"></div>
+  <div class="options multi" data-key="elternwelt">
+    <button class="option" data-value="stabil">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s2_o1"></strong><small data-i18n="s2_o1d"></small></div>
+    </button>
+    <button class="option" data-value="fassade">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s2_o1b"></strong><small data-i18n="s2_o1bd"></small></div>
+    </button>
+    <button class="option" data-value="frisch">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s2_o2"></strong><small data-i18n="s2_o2d"></small></div>
+    </button>
+    <button class="option" data-value="krise">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s2_o3"></strong><small data-i18n="s2_o3d"></small></div>
+    </button>
+    <button class="option" data-value="jung">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s2_o4"></strong><small data-i18n="s2_o4d"></small></div>
+    </button>
+    <button class="option" data-value="auseinander">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s2_o5"></strong><small data-i18n="s2_o5d"></small></div>
+    </button>
+    <button class="option" data-value="weissnicht">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s2_o6"></strong><small data-i18n="s2_o6d"></small></div>
+    </button>
+    <button class="option" data-value="erforschen">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s2_o7"></strong><small data-i18n="s2_o7d"></small></div>
+    </button>
+  </div>
+  <div class="textarea-wrap">
+    <span class="textarea-label" data-i18n="s2_extra_label"></span>
+    <textarea id="ta_elternwelt" class="small" data-i18n-placeholder="s2_extra_placeholder" rows="3"></textarea>
+  </div>
+  <div class="hint" data-i18n-html="s2_hint"></div>
+  <div class="btn-row">
+    <button class="btn" onclick="prevStep()" data-i18n="btn_back"></button>
+    <button class="btn btn-primary" onclick="nextStep()" data-i18n="btn_next"></button>
+  </div>
+</div>
+
+<!-- ====== STEP 3: FREUDE ====== -->
+<div class="step" id="step-3" data-step="3">
+  <div class="step-tag" data-i18n="s3_tag"></div>
+  <div class="step-question" data-i18n="s3_q"></div>
+  <div class="step-desc" data-i18n="s3_desc"></div>
+  <div class="options multi" data-key="freude">
+    <button class="option" data-value="beide">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s3_o1"></strong><small data-i18n="s3_o1d"></small></div>
+    </button>
+    <button class="option" data-value="einseitig">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s3_o2"></strong><small data-i18n="s3_o2d"></small></div>
+    </button>
+    <button class="option" data-value="grosseltern">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s3_o3"></strong><small data-i18n="s3_o3d"></small></div>
+    </button>
+    <button class="option" data-value="funktioniert">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s3_o4"></strong><small data-i18n="s3_o4d"></small></div>
+    </button>
+    <button class="option" data-value="dagegen">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s3_o5"></strong><small data-i18n="s3_o5d"></small></div>
+    </button>
+    <button class="option" data-value="nie_erzaehlt">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s3_o6"></strong><small data-i18n="s3_o6d"></small></div>
+    </button>
+    <button class="option" data-value="erforschen">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s3_o7"></strong><small data-i18n="s3_o7d"></small></div>
+    </button>
+  </div>
+  <div class="hint" data-i18n-html="s3_hint"></div>
+  <div class="btn-row">
+    <button class="btn" onclick="prevStep()" data-i18n="btn_back"></button>
+    <button class="btn btn-primary" onclick="nextStep()" data-i18n="btn_next"></button>
+  </div>
+</div>
+
+<!-- ====== STEP 4: PLATZ ====== -->
+<div class="step" id="step-4" data-step="4">
+  <div class="step-tag" data-i18n="s4_tag"></div>
+  <div class="step-question" data-i18n="s4_q"></div>
+  <div class="step-desc" data-i18n="s4_desc"></div>
+  <div class="options" data-key="platz">
+    <button class="option" data-value="ja">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s4_o1"></strong><small data-i18n="s4_o1d"></small></div>
+    </button>
+    <button class="option" data-value="meistens">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s4_o2"></strong><small data-i18n="s4_o2d"></small></div>
+    </button>
+    <button class="option" data-value="verdienen">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s4_o3"></strong><small data-i18n="s4_o3d"></small></div>
+    </button>
+    <button class="option" data-value="zuviel">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s4_o4"></strong><small data-i18n="s4_o4d"></small></div>
+    </button>
+    <button class="option" data-value="unsichtbar">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s4_o5"></strong><small data-i18n="s4_o5d"></small></div>
+    </button>
+  </div>
+  <div class="textarea-wrap">
+    <span class="textarea-label" data-i18n="s4_extra_label"></span>
+    <textarea id="ta_platz" class="small" data-i18n-placeholder="s4_extra_placeholder" rows="3"></textarea>
+  </div>
+  <div class="btn-row">
+    <button class="btn" onclick="prevStep()" data-i18n="btn_back"></button>
+    <button class="btn btn-primary" onclick="nextStep()" data-i18n="btn_next"></button>
+  </div>
+</div>
+
+<!-- ====== STEP 5: DIE FRAGE ====== -->
+<div class="step" id="step-5" data-step="5">
+  <div class="step-tag" data-i18n="s5_tag"></div>
+  <div class="step-question" data-i18n="s5_q"></div>
+  <div class="step-desc" data-i18n="s5_desc"></div>
+  <div class="options" data-key="frage">
+    <button class="option" data-value="nie">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s5_o1"></strong><small data-i18n="s5_o1d"></small></div>
+    </button>
+    <button class="option" data-value="kind">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s5_o2"></strong><small data-i18n="s5_o2d"></small></div>
+    </button>
+    <button class="option" data-value="jugend">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s5_o3"></strong><small data-i18n="s5_o3d"></small></div>
+    </button>
+    <button class="option" data-value="erwachsen">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s5_o4"></strong><small data-i18n="s5_o4d"></small></div>
+    </button>
+    <button class="option" data-value="begleitet">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s5_o5"></strong><small data-i18n="s5_o5d"></small></div>
+    </button>
+    <button class="option" data-value="erstesmal">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s5_o6"></strong><small data-i18n="s5_o6d"></small></div>
+    </button>
+  </div>
+  <div class="hint" data-i18n-html="s5_hint"></div>
+  <div class="btn-row">
+    <button class="btn" onclick="prevStep()" data-i18n="btn_back"></button>
+    <button class="btn btn-primary" onclick="nextStep()" data-i18n="btn_next"></button>
+  </div>
+</div>
+
+<!-- ====== STEP 6: HEUTE ====== -->
+<div class="step" id="step-6" data-step="6">
+  <div class="step-tag" data-i18n="s6_tag"></div>
+  <div class="step-question" data-i18n="s6_q"></div>
+  <div class="step-desc" data-i18n="s6_desc"></div>
+  <div class="options" data-key="heute">
+    <button class="option" data-value="dankbarkeit">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s6_o1"></strong><small data-i18n="s6_o1d"></small></div>
+    </button>
+    <button class="option" data-value="neutral">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s6_o2"></strong><small data-i18n="s6_o2d"></small></div>
+    </button>
+    <button class="option" data-value="trauer">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s6_o3"></strong><small data-i18n="s6_o3d"></small></div>
+    </button>
+    <button class="option" data-value="wut">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s6_o4"></strong><small data-i18n="s6_o4d"></small></div>
+    </button>
+    <button class="option" data-value="nichts">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s6_o5"></strong><small data-i18n="s6_o5d"></small></div>
+    </button>
+    <button class="option" data-value="zuviel">
+      <div class="option-radio"></div>
+      <div class="option-text"><strong data-i18n="s6_o6"></strong><small data-i18n="s6_o6d"></small></div>
+    </button>
+  </div>
+  <div class="textarea-wrap">
+    <span class="textarea-label" data-i18n="s6_extra_label"></span>
+    <textarea id="ta_heute" class="small" data-i18n-placeholder="s6_extra_placeholder" rows="3"></textarea>
+  </div>
+  <div class="hint" data-i18n-html="s6_hint"></div>
+  <div class="btn-row">
+    <button class="btn" onclick="prevStep()" data-i18n="btn_back"></button>
+    <button class="btn btn-primary" id="btnResult" disabled onclick="showResult()" data-i18n="btn_result"></button>
+  </div>
+</div>
+
+<!-- ====== RESULT ====== -->
+<div class="result" id="result">
+  <div class="step-tag" data-i18n="r_tag"></div>
+  <div class="step-question" data-i18n="r_title"></div>
+  <div class="step-desc" style="margin-bottom:2rem" data-i18n="r_subtitle"></div>
+
+  <div id="resultContent"></div>
+
+  <div class="result-actions">
+    <button class="btn btn-primary" onclick="copyResult()" data-i18n="btn_copy"></button>
+    <button class="btn" onclick="sendResult()" data-i18n="btn_send"></button>
+    <button class="btn" onclick="restartAll()" data-i18n="btn_restart"></button>
+  </div>
+  <div class="copy-feedback" id="copyFeedback"></div>
+
+  <div class="foot" data-i18n-html="footer"></div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+// ==================== i18n ====================
+const _saved = localStorage.getItem('ursprung-lang');
+let lang = _saved || ((navigator.language || 'de').toLowerCase().startsWith('de') ? 'de' : 'en');
+
+const i18n = {
+de: {
+  title: 'Ursprung',
+  subtitle: 'Wie bist du entstanden?\nNicht wer du bist \u2014 wie du angefangen hast.',
+
+  // Step 1
+  s1_tag: '01 \u00b7 Deine Ankunft',
+  s1_q: 'Wie erz\u00e4hlen deine Eltern die Geschichte deiner Geburt?',
+  s1_desc: 'Jede Familie hat eine Erz\u00e4hlung \u00fcber den Tag an dem du kamst. Manchmal laut, manchmal leise, manchmal fehlt sie ganz.',
+  s1_o1: 'Mit Stolz und Freude',
+  s1_o1d: '\u201eDas war der sch\u00f6nste Tag\u201c',
+  s1_o2: 'Sachlich',
+  s1_o2d: '\u201eDu kamst am \u2026 im Krankenhaus \u2026\u201c',
+  s1_o3: 'Sie erz\u00e4hlen sie selten',
+  s1_o3d: 'Kein festes Narrativ, wird \u00fcbergangen',
+  s1_o4: 'Widerspr\u00fcchlich',
+  s1_o4d: 'Vater erz\u00e4hlt anders als Mutter',
+  s1_o5: 'Ich kenne die Geschichte nicht',
+  s1_o5d: 'Wurde nie erz\u00e4hlt',
+  s1_hint: 'Jede Familie hat eine Erz\u00e4hlung \u00fcber den Tag an dem du kamst. Manche sind laut, manche leise, manche fehlen ganz. Alles davon sagt etwas.',
+
+  // Step 2
+  s2_tag: '02 \u00b7 Die Welt deiner Eltern',
+  s2_q: 'Was war im Leben deiner Eltern los, als du kamst?',
+  s2_desc: 'Mehr als eins ist m\u00f6glich. W\u00e4hle alles was zutrifft.',
+  s2_o1: 'Stabil',
+  s2_o1d: 'Zusammen, gefestigt \u2014 von innen und au\u00dfen',
+  s2_o1b: 'Von au\u00dfen stabil',
+  s2_o1bd: 'Es sah gut aus. Aber innen war es anders',
+  s2_o2: 'Frisch zusammen',
+  s2_o2d: 'Noch am Anfang, noch am Kennenlernen',
+  s2_o3: 'In einer Krise',
+  s2_o3d: 'Trennung, Krankheit, Verlust, Umbruch',
+  s2_o4: 'Jung',
+  s2_o4d: 'Einer oder beide unter 22',
+  s2_o5: 'Am Auseinandergehen',
+  s2_o5d: 'Schon getrennt oder kurz davor',
+  s2_o6: 'Ich wei\u00df es nicht',
+  s2_o6d: 'Dar\u00fcber wurde nie gesprochen',
+  s2_o7: 'Das m\u00f6chte ich herausfinden',
+  s2_o7d: 'Ich kenne die Antwort noch nicht \u2014 aber ich will sie finden',
+  s2_extra_label: 'Was wei\u00dft du noch \u00fcber diese Zeit?',
+  s2_extra_placeholder: 'Optional \u2014 was immer kommt\u2026',
+  s2_hint: 'Nicht wie es aussah. Wie es war. Viele Familien sehen von au\u00dfen stabil aus. Die Frage ist nicht was die Nachbarn gesehen h\u00e4tten \u2014 sondern was du sp\u00fcrst wenn du zur\u00fcckschaust.',
+
+  // Step 3
+  s3_tag: '03 \u00b7 Die Freude',
+  s3_q: 'Als klar war dass du kommst \u2014 wer hat sich gefreut?',
+  s3_desc: 'Mehr als eins ist m\u00f6glich.',
+  s3_o1: 'Beide Eltern',
+  s3_o1d: 'Sichtbare, geteilte Freude',
+  s3_o2: 'Ein Elternteil ja, das andere unsicher',
+  s3_o2d: 'Mutter ja, Vater unsicher \u2014 oder umgekehrt',
+  s3_o3: 'Die Gro\u00dfeltern',
+  s3_o3d: 'Mehr als die Eltern',
+  s3_o4: 'Alle haben funktioniert',
+  s3_o4d: 'Es wurde organisiert, nicht gefeiert',
+  s3_o5: 'Jemand war dagegen',
+  s3_o5d: 'Offen oder sp\u00fcrbar',
+  s3_o6: 'Das wurde nie erz\u00e4hlt',
+  s3_o6d: '\u200b',
+  s3_o7: 'Das m\u00f6chte ich herausfinden',
+  s3_o7d: 'Vielleicht ist es Zeit, diese Frage zu stellen',
+  s3_hint: 'Freude und Bereitschaft sind nicht dasselbe. Jemand kann sich freuen und trotzdem nicht bereit sein. Jemand kann bereit sein und es nicht zeigen.',
+
+  // Step 4
+  s4_tag: '04 \u00b7 Dein Platz',
+  s4_q: 'Hattest du als Kind das Gef\u00fchl, dass dein Platz in der Familie selbstverst\u00e4ndlich war?',
+  s4_desc: '',
+  s4_o1: 'Ja',
+  s4_o1d: 'Ich war da und das war richtig so',
+  s4_o2: 'Meistens',
+  s4_o2d: 'Grunds\u00e4tzlich schon, aber manchmal unsicher',
+  s4_o3: 'Ich musste ihn mir verdienen',
+  s4_o3d: 'Durch Leistung, Anpassung, Bravsein',
+  s4_o4: 'Ich war zu viel',
+  s4_o4d: 'Sp\u00fcrbar eine Belastung, auch wenn es keiner sagte',
+  s4_o5: 'Ich war unsichtbar',
+  s4_o5d: 'Da, aber nicht gesehen',
+  s4_extra_label: 'Woran machst du das fest?',
+  s4_extra_placeholder: 'Optional \u2014 eine Erinnerung, ein Gef\u00fchl\u2026',
+
+  // Step 5
+  s5_tag: '05 \u00b7 Die unausgesprochene Frage',
+  s5_q: 'Hast du dich jemals gefragt ob du \u201egewollt\u201c warst \u2014 auch wenn du die Frage nie laut gestellt hast?',
+  s5_desc: '',
+  s5_o1: 'Nein, nie',
+  s5_o1d: 'Das war nie eine Frage',
+  s5_o2: 'Kurz, als Kind',
+  s5_o2d: 'Kam und ging wieder',
+  s5_o3: 'Ja, als Jugendlicher',
+  s5_o3d: 'In der Abl\u00f6sung, im Streit',
+  s5_o4: 'Ja, als Erwachsener',
+  s5_o4d: 'Durch eigene Therapie oder Krise',
+  s5_o5: 'Das ist eine Frage die mich begleitet',
+  s5_o5d: '\u200b',
+  s5_o6: 'Ich frage mich das gerade zum ersten Mal',
+  s5_o6d: '\u200b',
+  s5_hint: 'Diese Frage ist keine Anklage. Sie ist ein Spiegel. Kein Mensch muss sich daf\u00fcr sch\u00e4men, sie zu stellen.',
+
+  // Step 6
+  s6_tag: '06 \u00b7 Heute',
+  s6_q: 'Wenn du an deine eigene Ankunft denkst \u2014 was sp\u00fcrst du?',
+  s6_desc: '',
+  s6_o1: 'Dankbarkeit',
+  s6_o1d: 'Ich bin froh dass ich da bin',
+  s6_o2: 'Neutralit\u00e4t',
+  s6_o2d: 'Es ist wie es ist',
+  s6_o3: 'Trauer',
+  s6_o3d: 'Etwas hat gefehlt',
+  s6_o4: 'Wut',
+  s6_o4d: 'Auf jemanden oder auf die Umst\u00e4nde',
+  s6_o5: 'Nichts',
+  s6_o5d: 'Ich sp\u00fcre nichts dabei',
+  s6_o6: 'Das ist gerade zu viel',
+  s6_o6d: 'Ich will hier nicht tiefer',
+  s6_extra_label: 'Wenn du willst \u2014 was kommt noch?',
+  s6_extra_placeholder: 'Optional \u2014 was immer da ist\u2026',
+  s6_hint: '\u201eNichts\u201c und \u201ezu viel\u201c sind gleichberechtigte Antworten. Es gibt hier kein Versagen.',
+
+  // Buttons
+  btn_next: 'Weiter',
+  btn_back: 'Zur\u00fcck',
+  btn_result: 'Mein Muster',
+  btn_copy: 'Kopieren',
+  btn_send: 'Per Mail senden',
+  btn_restart: 'Neu starten',
+
+  // Result
+  r_tag: 'Dein Muster',
+  r_title: 'Dein Ursprung',
+  r_subtitle: 'Das ist kein Urteil. Das ist der Anfang deiner Geschichte.',
+  r_h_ankunft: 'Deine Ankunft',
+  r_h_elternwelt: 'Die Welt deiner Eltern',
+  r_h_freude: 'Wer sich gefreut hat',
+  r_h_platz: 'Dein Platz',
+  r_h_frage: 'Die Frage',
+  r_h_heute: 'Heute',
+  r_h_muster: 'Dein Muster',
+  r_h_frage_mitnehmen: 'Eine Frage zum Mitnehmen',
+  r_empty: '(keine Antwort)',
+  r_copy_ok: '\u2713 In Zwischenablage kopiert',
+
+  // Patterns
+  pattern_boden_name: 'Boden',
+  pattern_boden_desc: 'Die Eltern waren bereit. Das Kind hatte von Anfang an einen Platz. Die Geschichte wird erz\u00e4hlt, die Freude war da. Der Boden war stabil.\n\nWas das bedeutet: Du hast eine Grundlage die viele nicht haben. Nicht weil deine Kindheit perfekt war \u2014 sondern weil dein Ankommen nicht in Frage stand. Das ist ein Geschenk das man leicht \u00fcbersieht.',
+  pattern_stroemung_name: 'Str\u00f6mung',
+  pattern_stroemung_desc: 'Mischsignale. Freude war da, aber auch Unsicherheit, Krise, \u00dcberforderung. Das Kind kam in eine Welt die noch nicht ganz bereit war \u2014 nicht aus Ablehnung, sondern aus Umst\u00e4nden.\n\nWas das bedeutet: Du hast gelernt, dir deinen Platz zu schaffen. Das ist St\u00e4rke \u2014 aber es kostet Energie die andere f\u00fcr anderes nutzen k\u00f6nnen. Die Frage \u201edarf ich hier sein?\u201c taucht vielleicht in Beziehungen auf, im Beruf, in Gruppen. Nicht laut. Als leises Grundrauschen.',
+  pattern_nebel_name: 'Nebel',
+  pattern_nebel_desc: 'Die Geschichte fehlt. Die Antworten sind \u201ewei\u00df nicht\u201c, \u201ewurde nie erz\u00e4hlt\u201c, \u201ealle haben funktioniert\u201c. Kein offener Schmerz \u2014 aber auch keine klare Freude. Nebel.\n\nWas das bedeutet: Nebel ist nicht Ablehnung. Nebel ist: es wurde nie gekl\u00e4rt. Die Frage wurde nie gestellt, die Geschichte nie erz\u00e4hlt. Das hei\u00dft nicht dass du nicht gewollt warst. Es hei\u00dft dass niemand es dir gesagt hat. Und manchmal ist das Nicht-Gesagte schwerer als ein klares Nein.',
+
+  // Questions to take
+  q_boden: 'Was willst du deinen Kindern davon weitergeben?',
+  q_stroemung: 'Wo in deinem Leben heute fragst du noch um Erlaubnis, da zu sein?',
+  q_nebel: 'Wem k\u00f6nntest du die Frage stellen? Und was h\u00e4lt dich davon ab?',
+
+  closing: 'Dein Ursprung ist kein Urteil. Er ist der Anfang deiner Geschichte \u2014 nicht ihr Ende.',
+
+  // Coaching bridge
+  r_h_bridge: 'Ein Angebot',
+  bridge_text: 'Du hast bei einigen Fragen gesp\u00fcrt, dass du die Antwort noch nicht kennst. Das ist kein Mangel \u2014 das ist ein Anfang. Diese Fragen lassen sich ergr\u00fcnden. Welche Fragen du deinen Eltern stellen k\u00f6nntest, wie du dich darauf vorbereitest, was du mit den Antworten machst \u2014 das l\u00e4sst sich begleiten.',
+  bridge_cta: 'Schreib mir',
+
+  // Export
+  export_head: 'URSPRUNG \u2014 Muster',
+  footer: 'Ursprung-Probatorik v1 \u00b7 Methode: Jochen Hornung \u00b7 Quelle: Erkenntnis 31 \u00b7 <em>\u201eDein Ursprung ist kein Urteil.\u201c</em>',
+},
+en: {
+  title: 'Origin',
+  subtitle: 'How did you come into being?\nNot who you are \u2014 how you began.',
+
+  s1_tag: '01 \u00b7 Your Arrival',
+  s1_q: 'How do your parents tell the story of your birth?',
+  s1_desc: 'Every family has a narrative about the day you arrived. Some are loud, some quiet, some are missing entirely.',
+  s1_o1: 'With pride and joy',
+  s1_o1d: '\u201cIt was the most beautiful day\u201d',
+  s1_o2: 'Matter-of-fact',
+  s1_o2d: '\u201cYou were born on \u2026 at the hospital \u2026\u201d',
+  s1_o3: 'They rarely tell it',
+  s1_o3d: 'No fixed narrative, gets skipped over',
+  s1_o4: 'Contradictory',
+  s1_o4d: 'Father tells it differently than mother',
+  s1_o5: 'I don\u2019t know the story',
+  s1_o5d: 'It was never told',
+  s1_hint: 'Every family has a story about the day you arrived. Some are loud, some quiet, some are missing entirely. All of it says something.',
+
+  s2_tag: '02 \u00b7 Your Parents\u2019 World',
+  s2_q: 'What was going on in your parents\u2019 lives when you arrived?',
+  s2_desc: 'More than one is possible. Choose everything that applies.',
+  s2_o1: 'Stable',
+  s2_o1d: 'Together, settled \u2014 inside and out',
+  s2_o1b: 'Stable from the outside',
+  s2_o1bd: 'It looked good. But inside it was different',
+  s2_o2: 'Newly together',
+  s2_o2d: 'Still at the beginning, still getting to know each other',
+  s2_o3: 'In a crisis',
+  s2_o3d: 'Separation, illness, loss, upheaval',
+  s2_o4: 'Young',
+  s2_o4d: 'One or both under 22',
+  s2_o5: 'Falling apart',
+  s2_o5d: 'Already separated or about to',
+  s2_o6: 'I don\u2019t know',
+  s2_o6d: 'This was never spoken about',
+  s2_o7: 'I want to find out',
+  s2_o7d: 'I don\u2019t know the answer yet \u2014 but I want to find it',
+  s2_extra_label: 'What else do you know about that time?',
+  s2_extra_placeholder: 'Optional \u2014 whatever comes\u2026',
+  s2_hint: 'Not how it looked. How it was. Many families appear stable from the outside. The question isn\u2019t what the neighbors would have seen \u2014 but what you feel when you look back.',
+
+  s3_tag: '03 \u00b7 The Joy',
+  s3_q: 'When it was clear you were coming \u2014 who was happy?',
+  s3_desc: 'More than one is possible.',
+  s3_o1: 'Both parents',
+  s3_o1d: 'Visible, shared joy',
+  s3_o2: 'One parent yes, the other uncertain',
+  s3_o2d: 'Mother yes, father unsure \u2014 or the other way around',
+  s3_o3: 'The grandparents',
+  s3_o3d: 'More than the parents',
+  s3_o4: 'Everyone just managed',
+  s3_o4d: 'It was organized, not celebrated',
+  s3_o5: 'Someone was against it',
+  s3_o5d: 'Openly or perceptibly',
+  s3_o6: 'That was never told',
+  s3_o6d: '\u200b',
+  s3_o7: 'I want to find out',
+  s3_o7d: 'Maybe it\u2019s time to ask this question',
+  s3_hint: 'Joy and readiness are not the same thing. Someone can be joyful and still not ready. Someone can be ready and not show it.',
+
+  s4_tag: '04 \u00b7 Your Place',
+  s4_q: 'As a child, did you feel that your place in the family was self-evident?',
+  s4_desc: '',
+  s4_o1: 'Yes',
+  s4_o1d: 'I was there and that was right',
+  s4_o2: 'Mostly',
+  s4_o2d: 'Basically yes, but sometimes uncertain',
+  s4_o3: 'I had to earn it',
+  s4_o3d: 'Through achievement, adaptation, being good',
+  s4_o4: 'I was too much',
+  s4_o4d: 'Perceptibly a burden, even if nobody said it',
+  s4_o5: 'I was invisible',
+  s4_o5d: 'There, but not seen',
+  s4_extra_label: 'What makes you say that?',
+  s4_extra_placeholder: 'Optional \u2014 a memory, a feeling\u2026',
+
+  s5_tag: '05 \u00b7 The Unspoken Question',
+  s5_q: 'Have you ever wondered if you were \u201cwanted\u201d \u2014 even if you never asked out loud?',
+  s5_desc: '',
+  s5_o1: 'No, never',
+  s5_o1d: 'That was never a question',
+  s5_o2: 'Briefly, as a child',
+  s5_o2d: 'It came and went',
+  s5_o3: 'Yes, as a teenager',
+  s5_o3d: 'In separation, in conflict',
+  s5_o4: 'Yes, as an adult',
+  s5_o4d: 'Through my own therapy or crisis',
+  s5_o5: 'This is a question that has stayed with me',
+  s5_o5d: '\u200b',
+  s5_o6: 'I\u2019m asking myself this for the first time right now',
+  s5_o6d: '\u200b',
+  s5_hint: 'This question is not an accusation. It\u2019s a mirror. No one should feel ashamed for asking it.',
+
+  s6_tag: '06 \u00b7 Today',
+  s6_q: 'When you think about your own arrival \u2014 what do you feel?',
+  s6_desc: '',
+  s6_o1: 'Gratitude',
+  s6_o1d: 'I\u2019m glad I\u2019m here',
+  s6_o2: 'Neutrality',
+  s6_o2d: 'It is what it is',
+  s6_o3: 'Grief',
+  s6_o3d: 'Something was missing',
+  s6_o4: 'Anger',
+  s6_o4d: 'At someone or at the circumstances',
+  s6_o5: 'Nothing',
+  s6_o5d: 'I feel nothing about it',
+  s6_o6: 'This is too much right now',
+  s6_o6d: 'I don\u2019t want to go deeper here',
+  s6_extra_label: 'If you want \u2014 what else is there?',
+  s6_extra_placeholder: 'Optional \u2014 whatever is there\u2026',
+  s6_hint: '\u201cNothing\u201d and \u201ctoo much\u201d are equally valid answers. There is no failing here.',
+
+  btn_next: 'Next',
+  btn_back: 'Back',
+  btn_result: 'My Pattern',
+  btn_copy: 'Copy',
+  btn_send: 'Send by email',
+  btn_restart: 'Start over',
+
+  r_tag: 'Your Pattern',
+  r_title: 'Your Origin',
+  r_subtitle: 'This is not a judgement. This is where your story begins.',
+  r_h_ankunft: 'Your Arrival',
+  r_h_elternwelt: 'Your Parents\u2019 World',
+  r_h_freude: 'Who Was Happy',
+  r_h_platz: 'Your Place',
+  r_h_frage: 'The Question',
+  r_h_heute: 'Today',
+  r_h_muster: 'Your Pattern',
+  r_h_frage_mitnehmen: 'A Question to Take With You',
+  r_empty: '(no answer)',
+  r_copy_ok: '\u2713 Copied to clipboard',
+
+  pattern_boden_name: 'Ground',
+  pattern_boden_desc: 'The parents were ready. The child had a place from the start. The story is told, the joy was there. The ground was stable.\n\nWhat this means: You have a foundation that many don\u2019t. Not because your childhood was perfect \u2014 but because your arrival was never in question. That\u2019s a gift that\u2019s easy to overlook.',
+  pattern_stroemung_name: 'Current',
+  pattern_stroemung_desc: 'Mixed signals. Joy was there, but so was uncertainty, crisis, overwhelm. The child arrived in a world that wasn\u2019t quite ready \u2014 not from rejection, but from circumstance.\n\nWhat this means: You learned to make your own place. That\u2019s strength \u2014 but it costs energy that others can use for other things. The question \u201cam I allowed to be here?\u201d may surface in relationships, at work, in groups. Not loudly. As quiet background noise.',
+  pattern_nebel_name: 'Fog',
+  pattern_nebel_desc: 'The story is missing. The answers are \u201cdon\u2019t know\u201d, \u201cnever told\u201d, \u201ceveryone just managed.\u201d No open pain \u2014 but no clear joy either. Fog.\n\nWhat this means: Fog is not rejection. Fog is: it was never clarified. The question was never asked, the story never told. That doesn\u2019t mean you weren\u2019t wanted. It means nobody told you. And sometimes the unsaid is heavier than a clear no.',
+
+  q_boden: 'What do you want to pass on to your children from this?',
+  q_stroemung: 'Where in your life today do you still ask permission to be there?',
+  q_nebel: 'Who could you ask the question? And what\u2019s holding you back?',
+
+  closing: 'Your origin is not a judgement. It\u2019s the beginning of your story \u2014 not its end.',
+
+  r_h_bridge: 'An Offer',
+  bridge_text: 'You sensed that you don\u2019t know the answer to some of these questions yet. That\u2019s not a lack \u2014 that\u2019s a beginning. These questions can be explored. Which questions to ask your parents, how to prepare, what to do with the answers \u2014 that can be accompanied.',
+  bridge_cta: 'Write to me',
+
+  export_head: 'ORIGIN \u2014 Pattern',
+  footer: 'Origin Probatorik v1 \u00b7 Method: Jochen Hornung \u00b7 Source: Insight 31 \u00b7 <em>\u201cYour origin is not a judgement.\u201d</em>',
+}
+};
+
+function t(key) { return i18n[lang][key] || i18n.de[key] || key; }
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.getElementById('langBtn').textContent = lang === 'de' ? 'EN' : 'DE';
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    el.innerHTML = t(el.dataset.i18nHtml);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    el.placeholder = t(el.dataset.i18nPlaceholder);
+  });
+  if (document.getElementById('result').classList.contains('active')) {
+    generateResult();
+  }
+}
+
+function toggleLang() {
+  lang = lang === 'de' ? 'en' : 'de';
+  localStorage.setItem('ursprung-lang', lang);
+  applyLang();
+}
+
+// ==================== App Logic ====================
+const TOTAL_STEPS = 6;
+let current = 1;
+const answers = { elternwelt: [], freude: [] };
+
+// Progress dots
+const progEl = document.getElementById('progress');
+for (let i = 1; i <= TOTAL_STEPS; i++) {
+  const d = document.createElement('div');
+  d.className = 'progress-dot' + (i === 1 ? ' active' : '');
+  d.dataset.step = i;
+  progEl.appendChild(d);
+}
+
+// Option click handlers
+document.querySelectorAll('.options').forEach(group => {
+  const isMulti = group.classList.contains('multi');
+  group.querySelectorAll('.option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const key = group.dataset.key;
+      const val = opt.dataset.value;
+      if (isMulti) {
+        opt.classList.toggle('selected');
+        if (!answers[key]) answers[key] = [];
+        if (opt.classList.contains('selected')) {
+          if (!answers[key].includes(val)) answers[key].push(val);
+        } else {
+          answers[key] = answers[key].filter(v => v !== val);
+        }
+      } else {
+        group.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        answers[key] = val;
+        // Enable result button in step 6
+        const btnRes = document.getElementById('btnResult');
+        if (btnRes && current === TOTAL_STEPS) btnRes.disabled = false;
+      }
+    });
+  });
+});
+
+// Enter key in textareas triggers next/result
+document.querySelectorAll('textarea').forEach(ta => {
+  ta.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (current === TOTAL_STEPS) {
+        const btn = document.getElementById('btnResult');
+        if (btn && !btn.disabled) showResult();
+      } else {
+        nextStep();
+      }
+    }
+  });
+});
+
+function updateProgress() {
+  progEl.querySelectorAll('.progress-dot').forEach(d => {
+    const s = parseInt(d.dataset.step);
+    d.className = 'progress-dot' + (s < current ? ' done' : '') + (s === current ? ' active' : '');
+  });
+}
+
+function nextStep() {
+  collectTextareas();
+  document.getElementById('step-' + current).classList.remove('active');
+  current++;
+  document.getElementById('step-' + current).classList.add('active');
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function prevStep() {
+  collectTextareas();
+  document.getElementById('step-' + current).classList.remove('active');
+  current--;
+  document.getElementById('step-' + current).classList.add('active');
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function collectTextareas() {
+  const map = {
+    ta_elternwelt: 'elternwelt_text',
+    ta_platz: 'platz_text',
+    ta_heute: 'heute_text'
+  };
+  Object.entries(map).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (el) answers[key] = el.value.trim();
+  });
+}
+
+function showResult() {
+  collectTextareas();
+  document.getElementById('step-' + current).classList.remove('active');
+  progEl.querySelectorAll('.progress-dot').forEach(d => d.className = 'progress-dot done');
+  const result = document.getElementById('result');
+  result.classList.add('active');
+  generateResult();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ==================== Pattern Detection ====================
+function detectPattern() {
+  // Score: A = Boden, B = Strömung, C = Nebel
+  let a = 0, b = 0, c = 0;
+
+  // Step 1 — Ankunft
+  const ankunft = answers.ankunft;
+  if (ankunft === 'stolz') a += 3;
+  else if (ankunft === 'sachlich') b += 2;
+  else if (ankunft === 'selten') c += 3;
+  else if (ankunft === 'widerspruch') b += 3;
+  else if (ankunft === 'unbekannt') c += 3;
+
+  // Step 2 — Elternwelt
+  const ew = answers.elternwelt || [];
+  if (ew.includes('stabil')) a += 3;
+  if (ew.includes('fassade')) b += 3;
+  if (ew.includes('frisch')) b += 2;
+  if (ew.includes('krise')) b += 3;
+  if (ew.includes('jung')) b += 2;
+  if (ew.includes('auseinander')) b += 3;
+  if (ew.includes('weissnicht')) c += 3;
+  if (ew.includes('erforschen')) c += 2;
+
+  // Step 3 — Freude
+  const fr = answers.freude || [];
+  if (fr.includes('beide')) a += 3;
+  if (fr.includes('einseitig')) b += 2;
+  if (fr.includes('grosseltern')) b += 1;
+  if (fr.includes('funktioniert')) c += 2;
+  if (fr.includes('dagegen')) b += 3;
+  if (fr.includes('nie_erzaehlt')) c += 3;
+  if (fr.includes('erforschen')) c += 2;
+
+  // Step 4 — Platz
+  const platz = answers.platz;
+  if (platz === 'ja') a += 3;
+  else if (platz === 'meistens') { a += 1; b += 1; }
+  else if (platz === 'verdienen') b += 3;
+  else if (platz === 'zuviel') b += 3;
+  else if (platz === 'unsichtbar') c += 3;
+
+  // Step 5 — Frage
+  const frage = answers.frage;
+  if (frage === 'nie') a += 3;
+  else if (frage === 'kind') { a += 1; b += 1; }
+  else if (frage === 'jugend') b += 2;
+  else if (frage === 'erwachsen') b += 2;
+  else if (frage === 'begleitet') b += 3;
+  else if (frage === 'erstesmal') c += 2;
+
+  // Step 6 — Heute
+  const heute = answers.heute;
+  if (heute === 'dankbarkeit') a += 2;
+  else if (heute === 'neutral') { b += 1; c += 1; }
+  else if (heute === 'trauer') b += 2;
+  else if (heute === 'wut') b += 2;
+  else if (heute === 'nichts') c += 3;
+  else if (heute === 'zuviel') { b += 1; c += 1; }
+
+  // Determine pattern — bei Gleichstand: vulnerableres Muster
+  if (c >= b && c >= a) return 'nebel';
+  if (b >= a) return 'stroemung';
+  return 'boden';
+}
+
+// ==================== Result Generation ====================
+function generateResult() {
+  const pattern = detectPattern();
+  let html = '';
+
+  // Reflected answers — Step 1
+  const ankunftLabels = {
+    stolz: 's1_o1', sachlich: 's1_o2', selten: 's1_o3',
+    widerspruch: 's1_o4', unbekannt: 's1_o5'
+  };
+  html += section(t('r_h_ankunft'),
+    answers.ankunft
+      ? `<div class="result-text"><em>${t(ankunftLabels[answers.ankunft])}</em></div>`
+      : `<div class="result-empty">${t('r_empty')}</div>`
+  );
+
+  // Step 2 — Elternwelt
+  const ew = answers.elternwelt || [];
+  const ewLabels = { stabil:'s2_o1', fassade:'s2_o1b', frisch:'s2_o2', krise:'s2_o3', jung:'s2_o4', auseinander:'s2_o5', weissnicht:'s2_o6', erforschen:'s2_o7' };
+  let ewHtml = '';
+  if (ew.length > 0) {
+    ewHtml += ew.map(v => `<em>${t(ewLabels[v])}</em>`).join(', ');
+    ewHtml = `<div class="result-text">${ewHtml}</div>`;
+  }
+  if (answers.elternwelt_text) {
+    ewHtml += `<div class="result-text" style="margin-top:0.5rem">${esc(answers.elternwelt_text)}</div>`;
+  }
+  if (!ewHtml) ewHtml = `<div class="result-empty">${t('r_empty')}</div>`;
+  html += section(t('r_h_elternwelt'), ewHtml);
+
+  // Step 3 — Freude
+  const fr = answers.freude || [];
+  const frLabels = { beide:'s3_o1', einseitig:'s3_o2', grosseltern:'s3_o3', funktioniert:'s3_o4', dagegen:'s3_o5', nie_erzaehlt:'s3_o6', erforschen:'s3_o7' };
+  let frHtml = '';
+  if (fr.length > 0) {
+    frHtml = `<div class="result-text">${fr.map(v => `<em>${t(frLabels[v])}</em>`).join(', ')}</div>`;
+  }
+  if (!frHtml) frHtml = `<div class="result-empty">${t('r_empty')}</div>`;
+  html += section(t('r_h_freude'), frHtml);
+
+  // Step 4 — Platz
+  const platzLabels = { ja:'s4_o1', meistens:'s4_o2', verdienen:'s4_o3', zuviel:'s4_o4', unsichtbar:'s4_o5' };
+  let platzHtml = '';
+  if (answers.platz) {
+    platzHtml = `<div class="result-text"><em>${t(platzLabels[answers.platz])}</em></div>`;
+  }
+  if (answers.platz_text) {
+    platzHtml += `<div class="result-text" style="margin-top:0.5rem">${esc(answers.platz_text)}</div>`;
+  }
+  if (!platzHtml) platzHtml = `<div class="result-empty">${t('r_empty')}</div>`;
+  html += section(t('r_h_platz'), platzHtml);
+
+  // Step 5 — Frage
+  const frageLabels = { nie:'s5_o1', kind:'s5_o2', jugend:'s5_o3', erwachsen:'s5_o4', begleitet:'s5_o5', erstesmal:'s5_o6' };
+  html += section(t('r_h_frage'),
+    answers.frage
+      ? `<div class="result-text"><em>${t(frageLabels[answers.frage])}</em></div>`
+      : `<div class="result-empty">${t('r_empty')}</div>`
+  );
+
+  // Step 6 — Heute
+  const heuteLabels = { dankbarkeit:'s6_o1', neutral:'s6_o2', trauer:'s6_o3', wut:'s6_o4', nichts:'s6_o5', zuviel:'s6_o6' };
+  let heuteHtml = '';
+  if (answers.heute) {
+    heuteHtml = `<div class="result-text"><em>${t(heuteLabels[answers.heute])}</em></div>`;
+  }
+  if (answers.heute_text) {
+    heuteHtml += `<div class="result-text" style="margin-top:0.5rem">${esc(answers.heute_text)}</div>`;
+  }
+  if (!heuteHtml) heuteHtml = `<div class="result-empty">${t('r_empty')}</div>`;
+  html += section(t('r_h_heute'), heuteHtml);
+
+  // Pattern
+  const patternName = t('pattern_' + pattern + '_name');
+  const patternDesc = t('pattern_' + pattern + '_desc');
+  html += `<div class="result-section">
+    <h3>${t('r_h_muster')}</h3>
+    <div class="result-pattern">
+      <div class="result-pattern-name">${patternName}</div>
+      <div class="result-pattern-desc">${patternDesc.replace(/\n/g, '<br>')}</div>
+    </div>
+  </div>`;
+
+  // Question to take
+  const qKey = 'q_' + pattern;
+  html += `<div class="result-summary">
+    <h3>${t('r_h_frage_mitnehmen')}</h3>
+    <p>${t(qKey)}</p>
+  </div>`;
+
+  // Coaching bridge — if person has unknowns/explore answers
+  const hasExplore = ew.includes('erforschen') || fr.includes('erforschen')
+    || ew.includes('weissnicht') || fr.includes('nie_erzaehlt')
+    || answers.ankunft === 'unbekannt' || answers.ankunft === 'selten'
+    || answers.frage === 'erstesmal' || answers.frage === 'begleitet'
+    || answers.heute === 'zuviel';
+
+  if (hasExplore) {
+    html += `<div class="result-bridge">
+      <h3>${t('r_h_bridge')}</h3>
+      <p>${t('bridge_text')}</p>
+      <a class="btn-bridge" href="mailto:jochen.hornung@me.com?subject=${encodeURIComponent(t('export_head') + ' \u2014 ' + t('r_h_bridge'))}">${t('bridge_cta')}</a>
+    </div>`;
+  }
+
+  // Closing
+  html += `<div class="result-closing">${t('closing')}</div>`;
+
+  document.getElementById('resultContent').innerHTML = html;
+}
+
+function esc(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function section(heading, content) {
+  return `<div class="result-section"><h3>${heading}</h3>${content}</div>`;
+}
+
+// ==================== Export ====================
+function buildExportText() {
+  const pattern = detectPattern();
+  const ankunftLabels = { stolz:'s1_o1', sachlich:'s1_o2', selten:'s1_o3', widerspruch:'s1_o4', unbekannt:'s1_o5' };
+  const ewLabels = { stabil:'s2_o1', fassade:'s2_o1b', frisch:'s2_o2', krise:'s2_o3', jung:'s2_o4', auseinander:'s2_o5', weissnicht:'s2_o6', erforschen:'s2_o7' };
+  const frLabels = { beide:'s3_o1', einseitig:'s3_o2', grosseltern:'s3_o3', funktioniert:'s3_o4', dagegen:'s3_o5', nie_erzaehlt:'s3_o6', erforschen:'s3_o7' };
+  const platzLabels = { ja:'s4_o1', meistens:'s4_o2', verdienen:'s4_o3', zuviel:'s4_o4', unsichtbar:'s4_o5' };
+  const frageLabels = { nie:'s5_o1', kind:'s5_o2', jugend:'s5_o3', erwachsen:'s5_o4', begleitet:'s5_o5', erstesmal:'s5_o6' };
+  const heuteLabels = { dankbarkeit:'s6_o1', neutral:'s6_o2', trauer:'s6_o3', wut:'s6_o4', nichts:'s6_o5', zuviel:'s6_o6' };
+
+  let text = t('export_head') + '\n';
+  text += '\u2501'.repeat(32) + '\n\n';
+
+  text += t('r_h_ankunft').toUpperCase() + '\n';
+  text += (answers.ankunft ? t(ankunftLabels[answers.ankunft]) : t('r_empty')) + '\n\n';
+
+  text += t('r_h_elternwelt').toUpperCase() + '\n';
+  const ew = answers.elternwelt || [];
+  if (ew.length > 0) ew.forEach(v => { text += '\u00b7 ' + t(ewLabels[v]) + '\n'; });
+  if (answers.elternwelt_text) text += answers.elternwelt_text + '\n';
+  if (ew.length === 0 && !answers.elternwelt_text) text += t('r_empty') + '\n';
+  text += '\n';
+
+  text += t('r_h_freude').toUpperCase() + '\n';
+  const fr = answers.freude || [];
+  if (fr.length > 0) fr.forEach(v => { text += '\u00b7 ' + t(frLabels[v]) + '\n'; });
+  else text += t('r_empty') + '\n';
+  text += '\n';
+
+  text += t('r_h_platz').toUpperCase() + '\n';
+  text += (answers.platz ? t(platzLabels[answers.platz]) : t('r_empty')) + '\n';
+  if (answers.platz_text) text += answers.platz_text + '\n';
+  text += '\n';
+
+  text += t('r_h_frage').toUpperCase() + '\n';
+  text += (answers.frage ? t(frageLabels[answers.frage]) : t('r_empty')) + '\n\n';
+
+  text += t('r_h_heute').toUpperCase() + '\n';
+  text += (answers.heute ? t(heuteLabels[answers.heute]) : t('r_empty')) + '\n';
+  if (answers.heute_text) text += answers.heute_text + '\n';
+  text += '\n';
+
+  text += t('r_h_muster').toUpperCase() + '\n';
+  text += t('pattern_' + pattern + '_name') + '\n';
+  text += t('pattern_' + pattern + '_desc') + '\n\n';
+
+  text += t('r_h_frage_mitnehmen').toUpperCase() + '\n';
+  text += t('q_' + pattern) + '\n\n';
+
+  text += t('closing') + '\n';
+
+  return text;
+}
+
+function sendResult() {
+  const text = buildExportText();
+  const subject = encodeURIComponent(t('export_head'));
+  const body = encodeURIComponent(text);
+  window.location.href = 'mailto:jochen.hornung@me.com?subject=' + subject + '&body=' + body;
+}
+
+function copyResult() {
+  const text = buildExportText();
+  navigator.clipboard.writeText(text).then(() => {
+    const fb = document.getElementById('copyFeedback');
+    fb.textContent = t('r_copy_ok');
+    setTimeout(() => { fb.textContent = ''; }, 3000);
+  });
+}
+
+function restartAll() {
+  Object.keys(answers).forEach(k => {
+    if (k === 'elternwelt' || k === 'freude') answers[k] = [];
+    else answers[k] = '';
+  });
+  document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+  document.querySelectorAll('textarea').forEach(ta => { ta.value = ''; });
+  document.getElementById('btnResult').disabled = true;
+  document.getElementById('result').classList.remove('active');
+  current = 1;
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-1').classList.add('active');
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ==================== Theme ====================
+function toggleTheme() {
+  document.documentElement.classList.toggle('light');
+  localStorage.setItem('ursprung-theme',
+    document.documentElement.classList.contains('light') ? 'light' : 'dark');
+}
+const savedTheme = localStorage.getItem('ursprung-theme');
+if (savedTheme === 'light') {
+  document.documentElement.classList.add('light');
+} else if (!savedTheme) {
+  const hour = new Date().getHours();
+  if (hour >= 7 && hour < 19) document.documentElement.classList.add('light');
+}
+
+// ==================== Init ====================
+document.getElementById('step-1').classList.add('active');
+applyLang();
+</script>
+</body>
+</html>
